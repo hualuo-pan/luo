@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>综合信息搜索系统</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.6.8/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css" media="all">
+    <style>
+        .layuimini-container {
+            padding: 15px;
+        }
+        .layuimini-main {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 4px;
+            min-height: calc(100vh - 30px);
+        }
+        .search-header {
+            text-align: center;
+            margin: 30px 0 40px;
+        }
+        .search-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .search-desc {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .advanced-filter {
+            border: 1px solid #eee;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .filter-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .filter-title i {
+            margin-right: 8px;
+            color: #1E9FFF;
+        }
+        .filter-row {
+            margin-bottom: 15px;
+        }
+        .result-stats {
+            color: #666;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .result-card {
+            border: 1px solid #eee;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.2s;
+        }
+        .result-card:hover {
+            border-color: #1E9FFF;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .result-title {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .result-title a {
+            color: #1E9FFF;
+        }
+        .result-title a:hover {
+            text-decoration: underline;
+        }
+        .result-meta {
+            color: #5FB878;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .result-desc {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        .result-tags {
+            margin-top: 10px;
+        }
+        .result-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 12px;
+            border-radius: 12px;
+            background-color: #f5f5f5;
+            color: #666;
+            margin-right: 8px;
+        }
+        .search-type-tabs {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .search-type-tabs .layui-tab-title {
+            margin-bottom: 0;
+        }
+        .search-type-tabs .layui-tab-content {
+            padding: 0;
+        }
+        .empty-result {
+            text-align: center;
+            padding: 50px 0;
+            color: #999;
+        }
+        .empty-result i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        .highlight {
+            color: #FF5722;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="search-header">
+            <div class="search-title">综合信息搜索系统</div>
+            <div class="search-desc">快速查找您需要的各类信息资源</div>
+            
+            <!-- 主搜索框 -->
+            <div class="layui-input-group" style="max-width: 800px; margin: 0 auto;">
+                <input type="text" id="main-search-input" placeholder="请输入搜索关键词..." class="layui-input" style="height: 48px; font-size: 16px;">
+                <div class="layui-input-group-btn">
+                    <button class="layui-btn" id="main-search-btn" style="height: 48px; padding: 0 25px; font-size: 16px;">
+                        <i class="fa fa-search" style="margin-right: 8px;"></i>搜索
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 搜索类型选项卡 -->
+        <div class="search-type-tabs">
+            <div class="layui-tab" lay-filter="search-type-tab">
+                <ul class="layui-tab-title">
+                    <li class="layui-this" lay-id="all">全部</li>
+                    <li lay-id="news">新闻</li>
+                    <li lay-id="products">产品</li>
+                    <li lay-id="users">用户</li>
+                    <li lay-id="documents">文档</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 高级筛选区域 -->
+        <div class="advanced-filter">
+            <div class="filter-title">
+                <i class="fa fa-filter"></i> 高级筛选
+            </div>
+            
+            <form class="layui-form" lay-filter="advanced-filter-form">
+                <div class="filter-row layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">信息来源</label>
+                        <div class="layui-input-inline">
+                            <select name="source">
+                                <option value="">全部来源</option>
+                                <option value="official">官方发布</option>
+                                <option value="user">用户分享</option>
+                                <option value="partner">合作机构</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-inline">
+                        <label class="layui-form-label">发布时间</label>
+                        <div class="layui-input-inline">
+                            <select name="time-range">
+                                <option value="">不限</option>
+                                <option value="today">今天</option>
+                                <option value="week">近一周</option>
+                                <option value="month">近一月</option>
+                                <option value="quarter">近三月</option>
+                                <option value="year">近一年</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-inline">
+                        <label class="layui-form-label">信息类型</label>
+                        <div class="layui-input-inline">
+                            <select name="info-type">
+                                <option value="">全部类型</option>
+                                <option value="text">文本</option>
+                                <option value="image">图片</option>
+                                <option value="video">视频</option>
+                                <option value="audio">音频</option>
+                                <option value="document">文档</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-inline">
+                        <label class="layui-form-label">排序方式</label>
+                        <div class="layui-input-inline">
+                            <select name="sort">
+                                <option value="relevance">相关度优先</option>
+                                <option value="time-desc">最新发布</option>
+                                <option value="time-asc">最早发布</option>
+                                <option value="popular">热门优先</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="filter-search-btn">
+                            <i class="fa fa-search"></i> 筛选
+                        </button>
+                        <button type="reset" class="layui-btn layui-btn-primary">
+                            <i class="fa fa-refresh"></i> 重置
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- 搜索结果区域 -->
+        <div id="search-result-container">
+            <!-- 搜索结果统计 -->
+            <div class="result-stats">
+                找到约 <span class="highlight">1,258</span> 条结果（用时 <span class="highlight">0.32</span> 秒）
+            </div>
+            
+            <!-- 搜索结果列表 -->
+            <div id="result-list">
+                <!-- 结果项1 -->
+                <div class="result-card">
+                    <div class="result-title">
+                        <a href="javascript:;">2023年最新<span class="highlight">人工智能</span>发展趋势报告</a>
+                    </div>
+                    <div class="result-meta">
+                        来源：科技资讯网 | 发布时间：2023-09-15 | 浏览量：2,587
+                    </div>
+                    <div class="result-desc">
+                        本报告详细分析了<span class="highlight">人工智能</span>在各行业的应用现状与未来发展方向，包括机器学习、自然语言处理、计算机视觉等关键技术的最新进展...
+                    </div>
+                    <div class="result-tags">
+                        <span class="result-tag">人工智能</span>
+                        <span class="result-tag">行业报告</span>
+                        <span class="result-tag">科技</span>
+                        <span class="result-tag">文档</span>
+                    </div>
+                </div>
+                
+                <!-- 结果项2 -->
+                <div class="result-card">
+                    <div class="result-title">
+                        <a href="javascript:;">基于<span class="highlight">人工智能</span>的智能客服系统解决方案</a>
+                    </div>
+                    <div class="result-meta">
+                        来源：某科技公司官网 | 发布时间：2023-08-28 | 浏览量：1,324
+                    </div>
+                    <div class="result-desc">
+                        本方案介绍了如何利用<span class="highlight">人工智能</span>技术构建高效智能客服系统，实现自动问答、用户意图识别、个性化服务等功能，有效降低企业客服成本...
+                    </div>
+                    <div class="result-tags">
+                        <span class="result-tag">人工智能</span>
+                        <span class="result-tag">智能客服</span>
+                        <span class="result-tag">解决方案</span>
+                        <span class="result-tag">产品</span>
+                    </div>
+                </div>
+                
+                <!-- 结果项3 -->
+                <div class="result-card">
+                    <div class="result-title">
+                        <a href="javascript:;">国际<span class="highlight">人工智能</span>大会将于下月在京召开</a>
+                    </div>
+                    <div class="result-meta">
+                        来源：新闻联播 | 发布时间：2023-09-20 | 浏览量：5,672
+                    </div>
+                    <div class="result-desc">
+                        据悉，2023国际<span class="highlight">人工智能</span>大会将于10月15日至18日在北京国际会议中心举行，届时将有来自全球各地的专家学者和企业代表出席...
+                    </div>
+                    <div class="result-tags">
+                        <span class="result-tag">人工智能</span>
+                        <span class="result-tag">会议</span>
+                        <span class="result-tag">新闻</span>
+                    </div>
+                </div>
+                
+                <!-- 结果项4 -->
+                <div class="result-card">
+                    <div class="result-title">
+                        <a href="javascript:;">张教授：<span class="highlight">人工智能</span>伦理与治理研究</a>
+                    </div>
+                    <div class="result-meta">
+                        来源：某大学官网 | 发布时间：2023-07-12 | 浏览量：986
+                    </div>
+                    <div class="result-desc">
+                        张教授团队长期致力于<span class="highlight">人工智能</span>伦理与治理研究，在国际顶级期刊发表多篇论文，提出了多项具有影响力的理论和建议...
+                    </div>
+                    <div class="result-tags">
+                        <span class="result-tag">人工智能</span>
+                        <span class="result-tag">伦理</span>
+                        <span class="result-tag">学术</span>
+                        <span class="result-tag">用户</span>
+                    </div>
+                </div>
+                
+                <!-- 结果项5 -->
+                <div class="result-card">
+                    <div class="result-title">
+                        <a href="javascript:;">《<span class="highlight">人工智能</span>基础与应用》教材电子版下载</a>
+                    </div>
+                    <div class="result-meta">
+                        来源：教育资源网 | 发布时间：2023-06-30 | 浏览量：3,215
+                    </div>
+                    <div class="result-desc">
+                        本教材系统介绍了<span class="highlight">人工智能</span>的基本原理、关键技术和实际应用，适合作为高等院校相关专业的教材或参考书，也可供从业人员自学使用...
+                    </div>
+                    <div class="result-tags">
+                        <span class="result-tag">人工智能</span>
+                        <span class="result-tag">教材</span>
+                        <span class="result-tag">下载</span>
+                        <span class="result-tag">文档</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 分页 -->
+            <div style="text-align: center; margin: 30px 0;">
+                <div class="layui-box layui-laypage layui-laypage-default">
+                    <a href="javascript:;" class="layui-laypage-prev">上一页</a>
+                    <span class="layui-laypage-curr"><em class="layui-laypage-em"></em><em>1</em></span>
+                    <a href="javascript:;">2</a>
+                    <a href="javascript:;">3</a>
+                    <a href="javascript:;">4</a>
+                    <a href="javascript:;">5</a>
+                    <span class="layui-laypage-spr">…</span>
+                    <a href="javascript:;">12</a>
+                    <a href="javascript:;" class="layui-laypage-next">下一页</a>
+                    <span class="layui-laypage-count">共 12 页</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.staticfile.org/layui/2.6.8/layui.js" charset="utf-8"></script>
+<script src="https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'element', 'layer'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            element = layui.element,
+            layer = layui.layer;
+
+        // 主搜索按钮点击事件
+        $('#main-search-btn').click(function() {
+            performSearch();
+        });
+        
+        // 搜索框回车事件
+        $('#main-search-input').keydown(function(e) {
+            if (e.keyCode === 13) {
+                performSearch();
+            }
+        });
+        
+        // 筛选搜索按钮点击事件
+        form.on('submit(filter-search-btn)', function(data) {
+            // 显示加载动画
+            layer.load(2);
+            
+            // 模拟搜索请求
+            setTimeout(function() {
+                layer.closeAll('loading');
+                // 在实际应用中，这里会根据筛选条件更新搜索结果
+                layer.msg('筛选完成');
+            }, 800);
+            
+            return false;
+        });
+        
+        // 搜索类型切换事件
+        element.on('tab(search-type-tab)', function(data) {
+            var type = this.getAttribute('lay-id');
+            // 显示加载动画
+            layer.load(2);
+            
+            // 模拟切换类型请求
+            setTimeout(function() {
+                layer.closeAll('loading');
+                layer.msg('已切换到[' + (type === 'all' ? '全部' : 
+                                         type === 'news' ? '新闻' :
+                                         type === 'products' ? '产品' :
+                                         type === 'users' ? '用户' : '文档') + ']类型');
+            }, 500);
+        });
+        
+        // 执行搜索函数
+        function performSearch() {
+            var keyword = $('#main-search-input').val().trim();
+            
+            if (!keyword) {
+                layer.msg('请输入搜索关键词');
+                return;
+            }
+            
+            // 显示加载动画
+            layer.load(2);
+            
+            // 模拟搜索请求
+            setTimeout(function() {
+                layer.closeAll('loading');
+                
+                // 在实际应用中，这里会根据关键词从服务器获取搜索结果
+                // 并更新页面内容
+                
+                // 滚动到结果区域
+                $('html, body').animate({
+                    scrollTop: $('#search-result-container').offset().top - 20
+                }, 300);
+            }, 1000);
+        }
+        
+        // 结果项点击事件
+        $('#result-list').on('click', '.result-card', function() {
+            var title = $(this).find('.result-title a').text();
+            layer.open({
+                title: '查看详情',
+                type: 1,
+                shade: 0.3,
+                area: ['800px', '500px'],
+                content: '<div style="padding: 20px;">' +
+                         '<h3 style="font-size: 18px; margin-bottom: 20px; color: #1E9FFF;">' + title + '</h3>' +
+                         '<div style="line-height: 1.8; color: #333;">' +
+                         '这里是"' + title + '"的详细内容...<br><br>' +
+                         '在实际应用中，这里会展示完整的信息内容，包括文本、图片、视频等多种形式。<br><br>' +
+                         '信息可能包含多个段落、图表、引用等元素，根据实际内容进行展示。' +
+                         '</div>' +
+                         '</div>'
+            });
+        });
+    });
+</script>
+</body>
+</html>

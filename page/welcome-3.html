@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>二手交易市场 - 都市信息供求网</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.6.8/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css" media="all">
+    <style>
+        .layui-top-box {
+            padding: 40px 20px 20px 20px;
+            color: #fff;
+        }
+        .panel {
+            margin-bottom: 17px;
+            background-color: #fff;
+            border: 1px solid transparent;
+            border-radius: 3px;
+            box-shadow: 0 1px 1px rgba(0,0,0,.05);
+            transition: all 0.3s ease;
+        }
+        .panel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .panel-body {
+            padding: 15px;
+        }
+        .panel-title {
+            margin-top: 0;
+            margin-bottom: 0;
+            font-size: 14px;
+            color: inherit;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .label {
+            display: inline;
+            padding: .2em .6em .3em;
+            font-size: 75%;
+            font-weight: 700;
+            line-height: 1;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: .25em;
+            margin-top: .3em;
+        }
+        .layui-red {
+            color: red;
+        }
+        .main_btn > p {
+            height: 40px;
+        }
+        .search-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .chart-container {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .chart-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f2f2f2;
+        }
+        .goods-card {
+            border: 1px solid #e6e6e6;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .goods-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .goods-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        .goods-info {
+            padding: 15px;
+        }
+        .goods-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .goods-meta {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        .goods-tags {
+            margin-bottom: 15px;
+        }
+        .goods-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 12px;
+            border-radius: 12px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        .tag-new {
+            background-color: #1E9FFF;
+            color: white;
+        }
+        .tag-hot {
+            background-color: #FF9800;
+            color: white;
+        }
+        .tag-cheap {
+            background-color: #5FB878;
+            color: white;
+        }
+        .goods-price {
+            color: #FF5722;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .seller-info {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #999;
+        }
+        .seller-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <!-- 顶部统计数据 -->
+    <div class="layuimini-main layui-top-box">
+        <div class="layui-row layui-col-space10">
+            <div class="layui-col-md3">
+                <div class="col-xs-6 col-md-3">
+                    <div class="panel layui-bg-cyan">
+                        <div class="panel-body">
+                            <div class="panel-title">
+                                <span class="label pull-right layui-bg-blue">实时</span>
+                                <h5>用户总数</h5>
+                            </div>
+                            <div class="panel-content">
+                                <h1 class="no-margins">15,862</h1>
+                                <div class="stat-percent font-bold text-gray">
+                                    <i class="fa fa-arrow-up" style="color: #009688;"></i> 较上月 +18.3%
+                                </div>
+                                <small>平台注册用户</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md3">
+                <div class="col-xs-6 col-md-3">
+                    <div class="panel layui-bg-blue">
+                        <div class="panel-body">
+                            <div class="panel-title">
+                                <span class="label pull-right layui-bg-cyan">实时</span>
+                                <h5>商品总数</h5>
+                            </div>
+                            <div class="panel-content">
+                                <h1 class="no-margins">8,753</h1>
+                                <div class="stat-percent font-bold text-gray">
+                                    <i class="fa fa-arrow-up" style="color: #009688;"></i> 较上月 +23.6%
+                                </div>
+                                <small>平台在售商品</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md3">
+                <div class="col-xs-6 col-md-3">
+                    <div class="panel layui-bg-green">
+                        <div class="panel-body">
+                            <div class="panel-title">
+                                <span class="label pull-right layui-bg-orange">实时</span>
+                                <h5>本月成交量</h5>
+                            </div>
+                            <div class="panel-content">
+                                <h1 class="no-margins">1,246</h1>
+                                <div class="stat-percent font-bold text-gray">
+                                    <i class="fa fa-arrow-up" style="color: #009688;"></i> 较上月 +15.2%
+                                </div>
+                                <small>二手商品成交数</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md3">
+                <div class="col-xs-6 col-md-3">
+                    <div class="panel layui-bg-orange">
+                        <div class="panel-body">
+                            <div class="panel-title">
+                                <span class="label pull-right layui-bg-green">实时</span>
+                                <h5>成交总额</h5>
+                            </div>
+                            <div class="panel-content">
+                                <h1 class="no-margins">¥286,450</h1>
+                                <div class="stat-percent font-bold text-gray">
+                                    <i class="fa fa-arrow-up" style="color: #009688;"></i> 较上月 +12.7%
+                                </div>
+                                <small>本月交易总金额</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 搜索区域 -->
+    <div class="search-container">
+        <form class="layui-form" lay-filter="search-form">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md3">
+                    <select name="goods-type" lay-verify="required">
+                        <option value="">商品分类</option>
+                        <option value="electronics">电子产品</option>
+                        <option value="home">家居用品</option>
+                        <option value="clothes">服装鞋帽</option>
+                        <option value="books">图书音像</option>
+                        <option value="sports">运动器材</option>
+                        <option value="other">其他物品</option>
+                    </select>
+                </div>
+                <div class="layui-col-md3">
+                    <select name="price-range">
+                        <option value="">价格范围</option>
+                        <option value="0-50">50元以下</option>
+                        <option value="50-200">50-200元</option>
+                        <option value="200-500">200-500元</option>
+                        <option value="500-1000">500-1000元</option>
+                        <option value="1000+">1000元以上</option>
+                    </select>
+                </div>
+                <div class="layui-col-md3">
+                    <select name="condition">
+                        <option value="">新旧程度</option>
+                        <option value="new">全新未拆封</option>
+                        <option value="like-new">99成新</option>
+                        <option value="good">9成新</option>
+                        <option value="normal">7-8成新</option>
+                        <option value="used">7成新以下</option>
+                    </select>
+                </div>
+                <div class="layui-col-md3">
+                    <div class="layui-input-group">
+                        <input type="text" name="keyword" placeholder="搜索商品名称" autocomplete="off" class="layui-input">
+                        <div class="layui-input-group-btn">
+                            <button class="layui-btn" lay-submit lay-filter="search-btn">
+                                <i class="fa fa-search"></i> 搜索
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- 数据图表区域 -->
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="chart-container">
+                <div class="chart-title">商品类别分布</div>
+                <div id="category-chart" style="height: 300px;"></div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="chart-container">
+                <div class="chart-title">近6个月成交量</div>
+                <div id="transaction-chart" style="height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 商品列表区域 -->
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>热门二手商品</span>
+                    <div>
+                        <a class="layui-btn layui-btn-sm layui-btn-normal" id="sort-price">价格排序</a>
+                        <a class="layui-btn layui-btn-sm layui-btn-normal" id="sort-newest">最新发布</a>
+                        <a class="layui-btn layui-btn-sm layui-btn-normal" id="sort-hot">热门推荐</a>
+                    </div>
+                </div>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space15" id="goods-list">
+                        <!-- 商品卡片1 -->
+                        <div class="layui-col-md3 goods-card">
+                            <img src="https://picsum.photos/400/300?random=1" class="goods-img" alt="二手笔记本电脑">
+                            <div class="goods-info">
+                                <div class="goods-title">Apple MacBook Pro 2020款 13寸</div>
+                                <div class="goods-tags">
+                                    <span class="goods-tag tag-new">99成新</span>
+                                    <span class="goods-tag tag-hot">热门</span>
+                                    <span class="goods-tag">电子产品</span>
+                                </div>
+                                <div class="goods-meta">
+                                    <i class="fa fa-map-marker" style="margin-right: 5px;"></i>海淀区 - 中关村
+                                    <span style="margin-left: 10px;"><i class="fa fa-clock-o" style="margin-right: 5px;"></i>3天前发布</span>
+                                </div>
+                                <div class="goods-price">¥6,800</div>
+                                <div class="seller-info">
+                                    <img src="https://picsum.photos/50/50?random=101" class="seller-avatar" alt="卖家头像">
+                                    <span>张先生</span>
+                                    <span style="margin-left: auto;"><i class="fa fa-eye" style="margin-right: 3px;"></i>248</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 商品卡片2 -->
+                        <div class="layui-col-md3 goods-card">
+                            <img src="https://picsum.photos/400/300?random=2" class="goods-img" alt="二手吉他">
+                            <div class="goods-info">
+                                <div class="goods-title">YAMAHA FG800 民谣吉他 41寸</div>
+                                <div class="goods-tags">
+                                    <span class="goods-tag tag-new">9成新</span>
+                                    <span class="goods-tag">乐器</span>
+                                </div>
+                                <div class="goods-meta">
+                                    <i class="fa fa-map-marker" style="margin-right: 5px;"></i>朝阳区 - 三里屯
+                                    <span style="margin-left: 10px;"><i class="fa fa-clock-o" style="margin-right: 5px;"></i>1周前发布</span>
+                                </div>
+                                <div class="goods-price">¥1,200</div>
+                                <div class="seller-info">
+                                    <img src="https://picsum.photos/50/50?random=102" class="seller-avatar" alt="卖家头像">
+                                    <span>李女士</span>
+                                    <span style="margin-left: auto;"><i class="fa fa-eye" style="margin-right: 3px;"></i>156</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 商品卡片3 -->
+                        <div class="layui-col-md3 goods-card">
+                            <img src="https://picsum.photos/400/300?random=3" class="goods-img" alt="二手跑步机">
+                            <div class="goods-info">
+                                <div class="goods-title">亿健8008A 家用折叠跑步机</div>
+                                <div class="goods-tags">
+                                    <span class="goods-tag tag-new">8成新</span>
+                                    <span class="goods-tag tag-hot">热门</span>
+                                    <span class="goods-tag">运动器材</span>
+                                </div>
+                                <div class="goods-meta">
+                                    <i class="fa fa-map-marker" style="margin-right: 5px;"></i>丰台区 - 马家堡
+                                    <span style="margin-left: 10px;"><i class="fa fa-clock-o" style="margin-right: 5px;"></i>2周前发布</span>
+                                </div>
+                                <div class="goods-price">¥1,800</div>
+                                <div class="seller-info">
+                                    <img src="https://picsum.photos/50/50?random=103" class="seller-avatar" alt="卖家头像">
+                                    <span>王先生</span>
+                                    <span style="margin-left: auto;"><i class="fa fa-eye" style="margin-right: 3px;"></i>324</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 商品卡片4 -->
+                        <div class="layui-col-md3 goods-card">
+                            <img src="https://picsum.photos/400/300?random=4" class="goods-img" alt="二手书籍">
+                            <div class="goods-info">
+                                <div class="goods-title">考研全套复习资料 2023版</div>
+                                <div class="goods-tags">
+                                    <span class="goods-tag tag-new">95成新</span>
+                                    <span class="goods-tag tag-cheap">超值</span>
+                                    <span class="goods-tag">图书音像</span>
+                                </div>
+                                <div class="goods-meta">
+                                    <i class="fa fa-map-marker" style="margin-right: 5px;"></i>海淀区 - 五道口
+                                    <span style="margin-left: 10px;"><i class="fa fa-clock-o" style="margin-right: 5px;"></i>5天前发布</span>
+                                </div>
+                                <div class="goods-price">¥150</div>
+                                <div class="seller-info">
+                                    <img src="https://picsum.photos/50/50?random=104" class="seller-avatar" alt="卖家头像">
+                                    <span>赵同学</span>
+                                    <span style="margin-left: auto;"><i class="fa fa-eye" style="margin-right: 3px;"></i>89</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 商品卡片5 -->
+                        <div class="layui-col-md3 goods-card">
+                            <img src="https://picsum.photos/400/300?random=5" class="goods-img" alt="二手相机">
+                            <div class="goods-info">
+                                <div class="goods-title">Canon EOS 80D 单反相机 18-135mm</div>
+                                <div class="goods-tags">
+                                    <span class="goods-tag tag-new">9成新</span>
+                                    <span class="goods-tag">电子产品</span>
+                                </div>
+                                <div class="goods-meta">
+                                    <i class="fa fa-map-marker" style="margin-right: 5px;"></i>东城区 - 王府井
+                                    <span style="margin-left: 10px;"><i class="fa fa-clock-o" style="margin-right: 5px;"></i>1个月前发布</span>
+                                </div>
+                                <div class="goods-price">¥5,200</div>
+                                <div class="seller-info">
+                                    <img src="https://picsum.photos/50/50?random=105" class="seller-avatar" alt="卖家头像">
+                                    <span>陈先生</span>
+                                    <span style="margin-left: auto;"><i class="fa fa-eye" style="margin-right: 3px;"></i>198</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 商品卡片6 -->
+                        <div class="layui-col-md3 goods-card">
+                            <img src="https://picsum.photos/400/300?random=6" class="goods-img" alt="二手沙发">
+                            <div class="goods-info">
+                                <div class="goods-title">北欧风格三人沙发 灰色布艺</div>
+                                <div class="goods-tags">
+                                    <span class="goods-tag tag-new">85成新</span>
+                                    <span class="goods-tag tag-hot">热门</span>
+                                    <span class="goods-tag">家居用品</span>
+                                </div>
+                                <div class="goods-meta">
+                                    <i class="fa fa-map-marker" style="margin-right: 5px;"></i>西城区 - 复兴门
+                                    <span style="margin-left: 10px;"><i class="fa fa-clock-o" style="margin-right: 5px;"></i>3周前发布</span>
+                                </div>
+                                <div class="goods-price">¥950</div>
+                                <div class="seller-info">
+                                    <img src="https://picsum.photos/50/50?random=106" class="seller-avatar" alt="卖家头像">
+                                    <span>刘女士</span>
+                                    <span style="margin-left: auto;"><i class="fa fa-eye" style="margin-right: 3px;"></i>143</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 商品卡片7 -->
+                        <div class="layui-col-md3 goods-card">
+                            <img src="https://picsum.photos/400/300?random=7" class="goods-img" alt="二手手表">
+                            <div class="goods-info">
+                                <div class="goods-title">Casio G-Shock 运动手表 黑色</div>
+                                <div class="goods-tags">
+                                    <span class="goods-tag tag-new">99成新</span>
+                                    <span class="goods-tag tag-cheap">超值</span>
+                                    <span class="goods-tag">配饰</span>
+                                </div>
+                                <div class="goods-meta">
+                                    <i class="fa fa-map-marker" style="margin-right: 5px;"></i>朝阳区 - 国贸
+                                    <span style="margin-left: 10px;"><i class="fa fa-clock-o" style="margin-right: 5px;"></i>2天前发布</span>
+                                </div>
+                                <div class="goods-price">¥650</div>
+                                <div class="seller-info">
+                                    <img src="https://picsum.photos/50/50?random=107" class="seller-avatar" alt="卖家头像">
+                                    <span>孙先生</span>
+                                    <span style="margin-left: auto;"><i class="fa fa-eye" style="margin-right: 3px;"></i>217</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 商品卡片8 -->
+                        <div class="layui-col-md3 goods-card">
+                            <img src="https://picsum.photos/400/300?random=8" class="goods-img" alt="二手羽绒服">
+                            <div class="goods-info">
+                                <div class="goods-title">Canada Goose 加拿大鹅 羽绒服 黑色 M码</div>
+                                <div class="goods-tags">
+                                    <span class="goods-tag tag-new">9成新</span>
+                                    <span class="goods-tag">服装鞋帽</span>
+                                </div>
+                                <div class="goods-meta">
+                                    <i class="fa fa-map-marker" style="margin-right: 5px;"></i>海淀区 - 学院路
+                                    <span style="margin-left: 10px;"><i class="fa fa-clock-o" style="margin-right: 5px;"></i>10天前发布</span>
+                                </div>
+                                <div class="goods-price">¥2,800</div>
+                                <div class="seller-info">
+                                    <img src="https://picsum.photos/50/50?random=108" class="seller-avatar" alt="卖家头像">
+                                    <span>郑女士</span>
+                                    <span style="margin-left: auto;"><i class="fa fa-eye" style="margin-right: 3px;"></i>302</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="layui-box layui-laypage layui-laypage-default" style="text-align: center;">
+                        <a href="javascript:;" class="layui-laypage-prev">上一页</a>
+                        <span class="layui-laypage-curr"><em class="layui-laypage-em"></em><em>1</em></span>
+                        <a href="javascript:;">2</a>
+                        <a href="javascript:;">3</a>
+                        <a href="javascript:;">4</a>
+                        <a href="javascript:;">5</a>
+                        <span class="layui-laypage-spr">…</span>
+                        <a href="javascript:;">12</a>
+                        <a href="javascript:;" class="layui-laypage-next">下一页</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.staticfile.org/layui/2.6.8/layui.js" charset="utf-8"></script>
+<script src="https://cdn.staticfile.org/echarts/5.3.3/echarts.min.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'laypage'], function() {
+        var form = layui.form;
+        var laypage = layui.laypage;
+        
+        // 初始化图表
+        // 商品类别分布图表
+        var categoryChart = echarts.init(document.getElementById('category-chart'));
+        var categoryOption = {
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                top: '5%',
+                left: 'center'
+            },
+            series: [
+                {
+                    name: '商品数量',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 18,
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [
+                        { value: 3200, name: '电子产品' },
+                        { value: 2100, name: '家居用品' },
+                        { value: 1500, name: '服装鞋帽' },
+                        { value: 950, name: '图书音像' },
+                        { value: 603, name: '运动器材' },
+                        { value: 400, name: '其他物品' }
+                    ]
+                }
+            ]
+        };
+        categoryChart.setOption(categoryOption);
+        
+        // 近6个月成交量图表
+        var transactionChart = echarts.init(document.getElementById('transaction-chart'));
+        var transactionOption = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['4月', '5月', '6月', '7月', '8月', '9月']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name: '成交量',
+                    type: 'bar',
+                    data: [756, 823, 945, 1021, 1156, 1246],
+                    itemStyle: {
+                        color: '#1E9FFF'
+                    }
+                }
+            ]
+        };
+        transactionChart.setOption(transactionOption);
+        
+        // 搜索表单提交
+        form.on('submit(search-btn)', function(data) {
+            console.log('搜索参数：', data.field);
+            // 这里可以添加搜索逻辑
+            layer.msg('搜索中...');
+            return false;
+        });
+        
+        // 排序按钮点击事件
+        document.getElementById('sort-price').addEventListener('click', function() {
+            layer.msg('按价格排序');
+            // 这里可以添加排序逻辑
+        });
+        
+        document.getElementById('sort-newest').addEventListener('click', function() {
+            layer.msg('按最新发布排序');
+            // 这里可以添加排序逻辑
+        });
+        
+        document.getElementById('sort-hot').addEventListener('click', function() {
+            layer.msg('按热门程度排序');
+            // 这里可以添加排序逻辑
+        });
+        
+        // 窗口大小变化时重绘图表
+        window.addEventListener('resize', function() {
+            categoryChart.resize();
+            transactionChart.resize();
+        });
+    });
+</script>
+</body>
+</html>

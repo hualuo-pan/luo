@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>邻里互动 - 都市信息网</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.6.8/css/layui.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {padding: 15px; background-color: #f2f3f5;}
+        .container {max-width: 1200px; margin: 0 auto;}
+        .header {margin-bottom: 20px;}
+        .page-title {font-size: 24px; font-weight: bold; margin-bottom: 10px;}
+        .nav-tabs {margin-bottom: 20px;}
+        .topic-card {background-color: #fff; border-radius: 6px; padding: 15px; margin-bottom: 15px; transition: all 0.3s;}
+        .topic-card:hover {box-shadow: 0 3px 10px rgba(0,0,0,0.08);}
+        .topic-header {display: flex; justify-content: space-between; margin-bottom: 10px;}
+        .user-info {display: flex; align-items: center;}
+        .avatar {width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;}
+        .username {font-weight: bold; margin-right: 10px;}
+        .post-time {color: #999; font-size: 12px;}
+        .topic-title {font-size: 18px; margin-bottom: 10px; transition: color 0.3s;}
+        .topic-title:hover {color: #1E9FFF;}
+        .topic-content {color: #666; line-height: 1.6; margin-bottom: 15px;}
+        .topic-images {display: flex; gap: 8px; margin-bottom: 15px;}
+        .topic-image {width: 100px; height: 100px; object-fit: cover; border-radius: 4px;}
+        .topic-footer {display: flex; justify-content: space-between; align-items: center; color: #999; font-size: 14px;}
+        .topic-meta {display: flex; gap: 20px;}
+        .meta-item {display: flex; align-items: center; cursor: pointer; transition: color 0.3s;}
+        .meta-item:hover {color: #1E9FFF;}
+        .meta-item i {margin-right: 5px;}
+        .topic-tags {display: flex; gap: 8px;}
+        .topic-tag {background-color: #f2f3f5; padding: 3px 10px; border-radius: 12px; font-size: 12px;}
+        .sidebar-card {background-color: #fff; border-radius: 6px; overflow: hidden; margin-bottom: 20px;}
+        .sidebar-title {padding: 12px 15px; background-color: #f8f9fa; border-bottom: 1px solid #eee; font-weight: bold;}
+        .sidebar-content {padding: 15px;}
+        .hot-topic {padding: 8px 0; border-bottom: 1px dashed #eee; display: flex; align-items: center;}
+        .hot-topic:last-child {border-bottom: none;}
+        .hot-rank {width: 20px; height: 20px; background-color: #f2f3f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 12px;}
+        .rank-1 {background-color: #FF5722; color: white;}
+        .rank-2 {background-color: #FF9800; color: white;}
+        .rank-3 {background-color: #FFC107; color: white;}
+        .community-list {margin-top: 10px;}
+        .community-item {display: flex; align-items: center; padding: 8px 0; border-bottom: 1px dashed #eee;}
+        .community-item:last-child {border-bottom: none;}
+        .community-avatar {width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;}
+        .community-name {flex: 1;}
+        .join-btn {background-color: #f2f3f5; border-radius: 4px; padding: 3px 10px; font-size: 12px; cursor: pointer;}
+        .join-btn:hover {background-color: #e9ecef;}
+        .publish-btn {position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background-color: #1E9FFF; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 12px rgba(30, 159, 255, 0.4); cursor: pointer; z-index: 999;}
+        .publish-btn:hover {background-color: #0e88e4;}
+        .topic-detail-header {border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;}
+        .topic-detail-title {font-size: 22px; margin-bottom: 15px;}
+        .topic-detail-content {line-height: 1.8; font-size: 16px; margin-bottom: 20px;}
+        .topic-detail-images {display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;}
+        .detail-image {max-width: 300px; max-height: 300px; object-fit: cover; border-radius: 4px;}
+        .comment-item {padding: 15px 0; border-bottom: 1px solid #eee;}
+        .comment-header {display: flex; justify-content: space-between; margin-bottom: 10px;}
+        .comment-content {margin-bottom: 10px; line-height: 1.6;}
+        .comment-footer {display: flex; gap: 15px; color: #999; font-size: 14px;}
+        .comment-input {margin-top: 20px;}
+        
+        @media (max-width: 768px) {
+            .topic-title {font-size: 16px;}
+            .topic-image {width: 80px; height: 80px;}
+            .topic-meta {flex-wrap: wrap; gap: 10px;}
+            .detail-image {max-width: 100%;}
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="page-title">邻里互动</div>
+            <p style="color: #666;">连接邻里，共建美好社区</p>
+        </div>
+        
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md8">
+                <!-- 导航选项卡 -->
+                <div class="nav-tabs layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-tab" lay-filter="neighborhood-tab">
+                            <ul class="layui-tab-title">
+                                <li class="layui-this" lay-id="all">全部动态</li>
+                                <li lay-id="topic">社区话题</li>
+                                <li lay-id="help">求助问答</li>
+                                <li lay-id="activity">邻里活动</li>
+                                <li lay-id="share">好物分享</li>
+                            </ul>
+                            
+                            <div class="layui-tab-content">
+                                <!-- 全部动态 -->
+                                <div class="layui-tab-item layui-show">
+                                    <!-- 筛选栏 -->
+                                    <form class="layui-form" lay-filter="filter-form">
+                                        <div class="layui-form-item">
+                                            <div class="layui-inline">
+                                                <label class="layui-form-label">社区</label>
+                                                <div class="layui-input-inline">
+                                                    <select name="community">
+                                                        <option value="">全部社区</option>
+                                                        <option value="1">阳光花园小区</option>
+                                                        <option value="2">幸福家园</option>
+                                                        <option value="3">城市之光</option>
+                                                        <option value="4">东方明珠</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="layui-inline">
+                                                <label class="layui-form-label">排序</label>
+                                                <div class="layui-input-inline">
+                                                    <select name="sort">
+                                                        <option value="latest">最新发布</option>
+                                                        <option value="hot">热门推荐</option>
+                                                        <option value="comment">评论最多</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="layui-inline">
+                                                <button class="layui-btn" lay-submit lay-filter="filter-submit">筛选</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    
+                                    <!-- 话题列表 -->
+                                    <div class="topic-list">
+                                        <!-- 话题1 -->
+                                        <div class="topic-card" data-type="topic">
+                                            <div class="topic-header">
+                                                <div class="user-info">
+                                                    <img src="https://picsum.photos/100/100?random=1" alt="用户头像" class="avatar">
+                                                    <span class="username">张阿姨</span>
+                                                    <span class="post-time">阳光花园小区 · 2小时前</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="topic-title">小区物业通知：本周六将进行水管维修，请提前储水</div>
+                                            
+                                            <div class="topic-content">
+                                                刚刚接到物业通知，本周六（9月23日）上午9点至下午5点将对小区供水管道进行维修，期间可能会停水。请各位邻居提前储备生活用水，以免影响正常生活。有疑问可以联系物业电话：88776655。
+                                            </div>
+                                            
+                                            <div class="topic-footer">
+                                                <div class="topic-meta">
+                                                    <div class="meta-item">
+                                                        <i class="fa fa-comment-o"></i>
+                                                        <span>28</span>
+                                                    </div>
+                                                    <div class="meta-item">
+                                                        <i class="fa fa-thumbs-o-up"></i>
+                                                        <span>45</span>
+                                                    </div>
+                                                    <div class="meta-item">
+                                                        <i class="fa fa-share-alt"></i>
+                                                        <span>分享</span>
+                                                    </div>
+                                                </div>
+                                                <div class="topic-tags">
+                                                    <span class="topic-tag">物业通知</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 话题2 -->
+                                        <div class="topic-card" data-type="help">
+                                            <div class="topic-header">
+                                                <div class="user-info">
+                                                    <img src="https://picsum.photos/100/100?random=2" alt="用户头像" class="avatar">
+                                                    <span class="username">李先生</span>
+                                                    <span class="post-time">幸福家园 · 昨天 15:30</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="topic-title">求助：谁知道小区附近有靠谱的家电维修师傅？</div>
+                                            
+                                            <div class="topic-content">
+                                                家里的冰箱突然不制冷了，是西门子的牌子，才用了两年多。请问小区附近有没有靠谱的维修师傅推荐？最好是有经验的，不会乱收费的。谢谢大家！
+                                            </div>
+                                            
+                                            <div class="topic-footer">
+                                                <div class="topic-meta">
+                                                    <div class="meta-item">
+                                                        <i class="fa fa-comment-o"></i>
+                                                        <span>15</span>
+                                                    </div>
+                                                    <div class="meta-item">
+                                                        <i class="fa fa-thumbs-o-up"></i>
+                                                        <span>8</span>
+                                                    </div>
+                                                    <div class="meta-item">
+                                                        <i class="fa fa-share-alt"></i>
+                                                        <span>分享</span>
+                                                    </div>
+                                                </div>
+                                                <div class="topic-tags">
+                                                    <span class="topic-tag">求助</span>
+                                                    <span class="topic-tag">家电维修</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 话题3 -->
+                                        <div class="topic-card" data-type="activity">
+                                            <div class="topic-header">
+                                                <div class="user-info">
+                                                    <img src="https://picsum.photos/100/100?random=3" alt="用户头像" class="avatar">
+                                                    <span class="username">王女士</span>
+                                                    <span class="post-time">城市之光 · 3天前</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="topic-title">【邻里活动】本周末小区秋季运动会，欢迎大家报名参加！</div>
+                                            
+                                            <div class="topic-content">
+                                                为增进邻里感情，锻炼身体，我们小区将在本周末（9月24日）上午9点举办秋季运动会，地点在小区中心广场。活动项目有：跳绳比赛、羽毛球双打、拔河比赛、亲子游戏等。获胜者有小礼品哦！想参加的邻居请在下方留言报名。
+                                            </div>
+                                            
+                                            <div class="topic-images">
+                                                <img src="https://picsum.photos/300/200?random=10" alt="运动会图片1" class="topic-image">
+                                                <img src="https://picsum.photos/300/200?random=11" alt="运动会图片2" class="topic-image">
+                                                <img src="https://picsum.photos/300/200?random=12" alt="运动会图片3" class="topic-image">
+                                            </div>
+                                            
+                                            <div class="topic-footer">
+                                                <div class="topic-meta">
+                                                    <div class="meta-item">
+                                                        <i class="fa fa-comment-o"></i>
+                                                        <span>42</span>
+                                                    </div>
+                                                    <div class="meta-item">
+                                                        <i class="fa fa-thumbs-o-up"></i>
+                                                        <span>78</span>
+                                                    </div>
+                                                    <div class="meta-item">
+                                                        <i class="fa fa-share-alt"></i>
+                                                        <span>分享</span>
+                                                    </div>
+                                                </div>
+                                                <div class="topic-tags">
+                                                    <span class="topic-tag">活动</span>
+                                                    <span class="topic-tag">运动会</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 话题4 -->
+                                        <div class="topic-card" data-type="share">
+                                            <div class="topic-header">
+                                                <div class="user-info">
+                                                    <img src="https://picsum.photos/100/100?random=4" alt="用户头像" class="avatar">
+                                                    <span class="username">赵先生</span>
+                                                    <span class="post-time">东方明珠 · 1周前</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="topic-title">【好物分享】小区门口新开的水果店，价格实惠，水果新鲜</div>
+                                            
+                                            <div class="topic-content">
+                                                发现小区西门新开了一家水果店，叫"鲜果园"，进去买了几次，感觉不错。价格比超市便宜，水果也很新鲜，尤其是他们家的进口车厘子和本地草莓，品质很好。老板人也很热情，买多了还会送点小水果。推荐给各位邻居！
+                                            </div>
+                                            
+                                            <div class="topic-images">
+                                                <img src="https://picsum.photos/300/200?random=13" alt="水果图片1" class="topic-image">
+                                                <img src="https://picsum.photos/300/200?random=14" alt="水果图片2" class="topic-image">
+                                            </div>
+                                            
+                                            <div class="topic-footer">
+                                                <div class="topic-meta">
+                                                    <div class="meta-item">
+                                                        <i class="fa fa-comment-o"></i>
+                                                        <span>36</span>
+                                                    </div>
+                                                    <div class="meta-item">
+                                                        <i class="fa fa-thumbs-o-up"></i>
+                                                        <span>92</span>
+                                                    </div>
+                                                    <div class="meta-item">
+                                                        <i class="fa fa-share-alt"></i>
+                                                        <span>分享</span>
+                                                    </div>
+                                                </div>
+                                                <div class="topic-tags">
+                                                    <span class="topic-tag">好物分享</span>
+                                                    <span class="topic-tag">美食</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 分页 -->
+                                    <div style="text-align: center; margin: 20px 0;">
+                                        <div class="layui-box layui-laypage layui-laypage-default">
+                                            <a href="javascript:;" class="layui-laypage-prev">上一页</a>
+                                            <span class="layui-laypage-curr"><em class="layui-laypage-em"></em><em>1</em></span>
+                                            <a href="javascript:;">2</a>
+                                            <a href="javascript:;">3</a>
+                                            <a href="javascript:;">4</a>
+                                            <a href="javascript:;">5</a>
+                                            <a href="javascript:;" class="layui-laypage-next">下一页</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 其他选项卡内容与"全部动态"类似，只是筛选了不同类型的内容 -->
+                                <div class="layui-tab-item">社区话题内容</div>
+                                <div class="layui-tab-item">求助问答内容</div>
+                                <div class="layui-tab-item">邻里活动内容</div>
+                                <div class="layui-tab-item">好物分享内容</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="layui-col-md4">
+                <!-- 发布动态卡片 -->
+                <div class="sidebar-card">
+                    <div class="sidebar-content" style="padding: 15px;">
+                        <button class="layui-btn layui-btn-normal" style="width: 100%;" id="publish-topic-btn">
+                            <i class="fa fa-pencil" style="margin-right: 5px;"></i>发布邻里动态
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 热门话题 -->
+                <div class="sidebar-card">
+                    <div class="sidebar-title">热门话题</div>
+                    <div class="sidebar-content">
+                        <div class="hot-topic">
+                            <div class="hot-rank rank-1">1</div>
+                            <div>小区物业费要上涨了，大家怎么看？</div>
+                        </div>
+                        <div class="hot-topic">
+                            <div class="hot-rank rank-2">2</div>
+                            <div>推荐几家小区周边好吃的餐馆</div>
+                        </div>
+                        <div class="hot-topic">
+                            <div class="hot-rank rank-3">3</div>
+                            <div>寻找周末一起遛狗的邻居</div>
+                        </div>
+                        <div class="hot-topic">
+                            <div class="hot-rank">4</div>
+                            <div>请问小区附近有靠谱的 babysitter吗？</div>
+                        </div>
+                        <div class="hot-topic">
+                            <div class="hot-rank">5</div>
+                            <div>分享我家的阳台种植经验</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 附近社区 -->
+                <div class="sidebar-card">
+                    <div class="sidebar-title">附近社区</div>
+                    <div class="sidebar-content">
+                        <div class="community-list">
+                            <div class="community-item">
+                                <img src="https://picsum.photos/100/100?random=20" alt="阳光花园小区" class="community-avatar">
+                                <div class="community-name">阳光花园小区</div>
+                                <div class="join-btn">加入</div>
+                            </div>
+                            <div class="community-item">
+                                <img src="https://picsum.photos/100/100?random=21" alt="幸福家园" class="community-avatar">
+                                <div class="community-name">幸福家园</div>
+                                <div class="join-btn">加入</div>
+                            </div>
+                            <div class="community-item">
+                                <img src="https://picsum.photos/100/100?random=22" alt="城市之光" class="community-avatar">
+                                <div class="community-name">城市之光</div>
+                                <div class="join-btn">已加入</div>
+                            </div>
+                            <div class="community-item">
+                                <img src="https://picsum.photos/100/100?random=23" alt="东方明珠" class="community-avatar">
+                                <div class="community-name">东方明珠</div>
+                                <div class="join-btn">加入</div>
+                            </div>
+                        </div>
+                        <button class="layui-btn layui-btn-primary layui-btn-sm" style="width: 100%; margin-top: 10px;">
+                            查看更多社区
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 社区公告 -->
+                <div class="sidebar-card">
+                    <div class="sidebar-title">社区公告</div>
+                    <div class="sidebar-content">
+                        <div style="margin-bottom: 15px; line-height: 1.6;">
+                            <p style="font-weight: bold; margin-bottom: 5px;">关于加强小区安全管理的通知</p>
+                            <p style="font-size: 14px; color: #666;">为保障小区居民安全，从10月1日起，小区将实行凭卡出入制度，请各位业主到物业办理门禁卡。</p>
+                            <p style="font-size: 12px; color: #999; margin-top: 5px;">发布时间：2023-09-10</p>
+                        </div>
+                        <div style="line-height: 1.6;">
+                            <p style="font-weight: bold; margin-bottom: 5px;">小区绿化改造工程通知</p>
+                            <p style="font-size: 14px; color: #666;">本月15日起将对小区绿化进行改造升级，期间可能会有噪音影响，敬请谅解。</p>
+                            <p style="font-size: 12px; color: #999; margin-top: 5px;">发布时间：2023-09-05</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 发布动态悬浮按钮 -->
+    <div class="publish-btn" id="publish-float-btn">
+        <i class="fa fa-plus"></i>
+    </div>
+    
+    <!-- 发布动态弹窗 (默认隐藏) -->
+    <div id="publish-modal" style="display: none; padding: 20px;">
+        <form class="layui-form" lay-filter="publish-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: #FF5722;">*</span>动态类型</label>
+                <div class="layui-input-block">
+                    <select name="topic_type" lay-verify="required">
+                        <option value="">请选择动态类型</option>
+                        <option value="topic">社区话题</option>
+                        <option value="help">求助问答</option>
+                        <option value="activity">邻里活动</option>
+                        <option value="share">好物分享</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: #FF5722;">*</span>所在社区</label>
+                <div class="layui-input-block">
+                    <select name="community" lay-verify="required">
+                        <option value="">请选择您所在的社区</option>
+                        <option value="1">阳光花园小区</option>
+                        <option value="2">幸福家园</option>
+                        <option value="3">城市之光</option>
+                        <option value="4">东方明珠</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: #FF5722;">*</span>标题</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" lay-verify="required" placeholder="请输入标题" class="layui-input">
+                </div>
+            </div>
+            
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label"><span style="color: #FF5722;">*</span>内容</label>
+                <div class="layui-input-block">
+                    <textarea name="content" lay-verify="required" placeholder="请详细描述您的内容..." class="layui-textarea" style="height: 150px;"></textarea>
+                </div>
+            </div>
+            
+            <div class="layui-form-item">
+                <label class="layui-form-label">上传图片</label>
+                <div class="layui-input-block">
+                    <div style="border: 1px dashed #ccc; padding: 20px; text-align: center; border-radius: 4px; cursor: pointer;" id="image-upload-area">
+                        <i class="fa fa-cloud-upload" style="font-size: 30px; color: #999;"></i>
+                        <p style="margin-top: 10px; color: #666;">点击或拖拽图片到此处上传（可选）</p>
+                        <p style="font-size: 12px; color: #999;">最多上传5张图片</p>
+                    </div>
+                    <input type="file" id="image-upload" style="display: none;" accept="image/*" multiple>
+                    <div class="layui-upload-list" style="margin-top: 15px;" id="preview-container">
+                        <!-- 图片预览将在这里显示 -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="layui-form-item">
+                <label class="layui-form-label">标签</label>
+                <div class="layui-input-block">
+                    <input type="text" name="tags" placeholder="请输入标签，多个标签用逗号分隔" class="layui-input">
+                    <span style="color: #999; font-size: 12px; margin-top: 5px; display: block;">例如：物业,通知,求助</span>
+                </div>
+            </div>
+            
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="publish-submit">发布</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- 话题详情弹窗 (默认隐藏) -->
+    <div id="topic-detail-modal" style="display: none; padding: 15px; max-height: 85vh; overflow-y: auto;">
+        <div class="topic-detail-header">
+            <div class="user-info">
+                <img src="https://picsum.photos/100/100?random=3" alt="用户头像" class="avatar">
+                <span class="username">王女士</span>
+                <span class="post-time">城市之光 · 3天前</span>
+            </div>
+            
+            <div class="topic-detail-title">【邻里活动】本周末小区秋季运动会，欢迎大家报名参加！</div>
+            
+            <div class="topic-tags">
+                <span class="topic-tag">活动</span>
+                <span class="topic-tag">运动会</span>
+                <span class="topic-tag">邻里互动</span>
+            </div>
+        </div>
+        
+        <div class="topic-detail-content">
+            为增进邻里感情，锻炼身体，我们小区将在本周末（9月24日）上午9点举办秋季运动会，地点在小区中心广场。
+            <br><br>
+            活动项目有：
+            <br>
+            1. 跳绳比赛（分成人组和儿童组）
+            <br>
+            2. 羽毛球双打
+            <br>
+            3. 拔河比赛（以楼栋为单位组队）
+            <br>
+            4. 亲子游戏（适合3-10岁儿童）
+            <br><br>
+            每个项目都有精美小礼品，参与就有纪念品！想参加的邻居请在下方留言报名，注明参加的项目。
+            <br><br>
+            也欢迎大家报名当志愿者，一起协助活动顺利进行！
+        </div>
+        
+        <div class="topic-detail-images">
+            <img src="https://picsum.photos/300/200?random=10" alt="运动会图片1" class="detail-image">
+            <img src="https://picsum.photos/300/200?random=11" alt="运动会图片2" class="detail-image">
+            <img src="https://picsum.photos/300/200?random=12" alt="运动会图片3" class="detail-image">
+        </div>
+        
+        <div class="topic-footer" style="margin-bottom: 20px;">
+            <div class="topic-meta">
+                <div class="meta-item">
+                    <i class="fa fa-comment-o"></i>
+                    <span>42 条评论</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fa fa-thumbs-o-up"></i>
+                    <span>78 人点赞</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fa fa-share-alt"></i>
+                    <span>分享</span>
+                </div>
+            </div>
+        </div>
+        
+        <div style="font-weight: bold; margin-bottom: 15px; padding-top: 15px; border-top: 1px solid #eee;">评论区</div>
+        
+        <!-- 评论输入框 -->
+        <div class="comment-input">
+            <form class="layui-form">
+                <div class="layui-form-item layui-form-text">
+                    <textarea name="comment" placeholder="写下你的评论..." class="layui-textarea" style="height: 100px;"></textarea>
+                </div>
+                <div class="layui-form-item">
+                    <button class="layui-btn" lay-submit>发表评论</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- 评论列表 -->
+        <div class="comment-list">
+            <div class="comment-item">
+                <div class="comment-header">
+                    <div class="user-info">
+                        <img src="https://picsum.photos/100/100?random=5" alt="用户头像" class="avatar" style="width: 30px; height: 30px;">
+                        <span class="username" style="font-size: 14px;">刘先生</span>
+                        <span class="post-time">2天前</span>
+                    </div>
+                </div>
+                <div class="comment-content">
+                    这个活动太好了！我报名参加羽毛球双打，有没有邻居想组队的？
+                </div>
+                <div class="comment-footer">
+                    <div class="meta-item">
+                        <i class="fa fa-thumbs-o-up"></i>
+                        <span>12</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fa fa-reply"></i>
+                        <span>回复</span>
+                    </div>
+                </div>
+                
+                <!-- 评论的回复 -->
+                <div style="margin-left: 40px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee;">
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <div class="user-info">
+                                <img src="https://picsum.photos/100/100?random=6" alt="用户头像" class="avatar" style="width: 30px; height: 30px;">
+                                <span class="username" style="font-size: 14px;">张先生</span>
+                                <span class="post-time">2天前</span>
+                            </div>
+                        </div>
+                        <div class="comment-content">
+                            @刘先生 我报名和你组队！我打羽毛球很多年了
+                        </div>
+                        <div class="comment-footer">
+                            <div class="meta-item">
+                                <i class="fa fa-thumbs-o-up"></i>
+                                <span>5</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fa fa-reply"></i>
+                                <span>回复</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comment-item">
+                <div class="comment-header">
+                    <div class="user-info">
+                        <img src="https://picsum.photos/100/100?random=7" alt="用户头像" class="avatar" style="width: 30px; height: 30px;">
+                        <span class="username" style="font-size: 14px;">陈女士</span>
+                        <span class="post-time">1天前</span>
+                    </div>
+                </div>
+                <div class="comment-content">
+                    我带孩子参加亲子游戏，请问需要提前准备什么吗？
+                </div>
+                <div class="comment-footer">
+                    <div class="meta-item">
+                        <i class="fa fa-thumbs-o-up"></i>
+                        <span>8</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fa fa-reply"></i>
+                        <span>回复</span>
+                    </div>
+                </div>
+                
+                <!-- 评论的回复 -->
+                <div style="margin-left: 40px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee;">
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <div class="user-info">
+                                <img src="https://picsum.photos/100/100?random=3" alt="用户头像" class="avatar" style="width: 30px; height: 30px;">
+                                <span class="username" style="font-size: 14px;">王女士</span>
+                                <span class="post-time">1天前</span>
+                            </div>
+                        </div>
+                        <div class="comment-content">
+                            @陈女士 不需要特别准备，穿着舒适的衣服和鞋子就可以了，我们会准备好游戏道具
+                        </div>
+                        <div class="comment-footer">
+                            <div class="meta-item">
+                                <i class="fa fa-thumbs-o-up"></i>
+                                <span>3</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fa fa-reply"></i>
+                                <span>回复</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comment-item">
+                <div class="comment-header">
+                    <div class="user-info">
+                        <img src="https://picsum.photos/100/100?random=8" alt="用户头像" class="avatar" style="width: 30px; height: 30px;">
+                        <span class="username" style="font-size: 14px;">赵先生</span>
+                        <span class="post-time">18小时前</span>
+                    </div>
+                </div>
+                <div class="comment-content">
+                    我报名当志愿者，有什么需要提前准备的吗？
+                </div>
+                <div class="comment-footer">
+                    <div class="meta-item">
+                        <i class="fa fa-thumbs-o-up"></i>
+                        <span>6</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fa fa-reply"></i>
+                        <span>回复</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.staticfile.org/layui/2.6.8/layui.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        layui.use(['form', 'layer', 'element'], function() {
+            var form = layui.form;
+            var layer = layui.layer;
+            var element = layui.element;
+            var $ = layui.jquery;
+            
+            // 发布动态按钮点击
+            $('#publish-topic-btn, #publish-float-btn').click(function() {
+                layer.open({
+                    type: 1,
+                    title: '发布邻里动态',
+                    area: ['700px', 'auto'],
+                    content: $('#publish-modal'),
+                    maxmin: true
+                });
+            });
+            
+            // 图片上传预览
+            $('#image-upload-area').click(function() {
+                $('#image-upload').click();
+            });
+            
+            $('#image-upload').change(function(e) {
+                var files = e.target.files;
+                if (!files || files.length === 0) return;
+                
+                // 限制最多上传5张
+                if (files.length > 5) {
+                    layer.msg('最多只能上传5张图片');
+                    return;
+                }
+                
+                // 预览图片
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var previewHtml = '<div style="display: inline-block; position: relative; margin-right: 10px; margin-bottom: 10px;">';
+                        previewHtml += '<img src="' + e.target.result + '" style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #eee; border-radius: 4px;">';
+                        previewHtml += '<div style="position: absolute; top: -5px; right: -5px; width: 20px; height: 20px; background-color: #FF5722; color: white; border-radius: 50%; text-align: center; line-height: 20px; font-size: 12px; cursor: pointer;" class="delete-img">×</div>';
+                        previewHtml += '</div>';
+                        $('#preview-container').append(previewHtml);
+                    };
+                    reader.readAsDataURL(file);
+                }
+                
+                // 清空input值，允许重复选择同一文件
+                $(this).val('');
+            });
+            
+            // 删除预览图片
+            $(document).on('click', '.delete-img', function() {
+                $(this).parent().remove();
+            });
+            
+            // 发布表单提交
+            form.on('submit(publish-submit)', function(data) {
+                layer.load(2);
+                setTimeout(function() {
+                    layer.closeAll('loading');
+                    layer.alert('发布成功！', function() {
+                        layer.closeAll('page');
+                        // 重置表单
+                        $('#publish-form')[0].reset();
+                        $('#preview-container').empty();
+                        // 这里可以添加刷新列表的逻辑
+                    });
+                }, 1500);
+                return false;
+            });
+            
+            // 筛选表单提交
+            form.on('submit(filter-submit)', function(data) {
+                layer.load(2);
+                setTimeout(function() {
+                    layer.closeAll('loading');
+                    layer.msg('筛选成功');
+                }, 800);
+                return false;
+            });
+            
+            // 点击话题标题查看详情
+            $('.topic-title').click(function() {
+                layer.open({
+                    type: 1,
+                    title: '话题详情',
+                    area: ['800px', 'auto'],
+                    content: $('#topic-detail-modal'),
+                    maxmin: true
+                });
+            });
+            
+            // 选项卡切换事件
+            element.on('tab(neighborhood-tab)', function(data) {
+                var type = this.getAttribute('lay-id');
+                if (type !== 'all') {
+                    // 筛选显示对应类型的话题
+                    $('.topic-card').hide();
+                    $('.topic-card[data-type="' + type + '"]').show();
+                } else {
+                    // 显示所有话题
+                    $('.topic-card').show();
+                }
+            });
+            
+            // 点赞功能
+            $(document).on('click', '.meta-item:has(.fa-thumbs-o-up)', function() {
+                var countElem = $(this).find('span');
+                var count = parseInt(countElem.text());
+                countElem.text(count + 1);
+                $(this).find('i').removeClass('fa-thumbs-o-up').addClass('fa-thumbs-up');
+                $(this).css('color', '#1E9FFF');
+            });
+            
+            // 加入社区
+            $(document).on('click', '.join-btn', function() {
+                if ($(this).text() === '加入') {
+                    $(this).text('已加入');
+                    layer.msg('成功加入该社区');
+                } else {
+                    $(this).text('加入');
+                    layer.msg('已退出该社区');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+    

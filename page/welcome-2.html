@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>招聘求职数据分析</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.6.8/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css" media="all">
+    <style>
+        body {
+            background-color: #f5f7fa;
+            padding: 15px;
+        }
+        .stat-card {
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .stat-card .layui-card-header {
+            border-bottom: 1px solid #f2f2f2;
+            padding: 12px 15px;
+            font-weight: 500;
+            color: #333;
+        }
+        .stat-card .layui-card-body {
+            padding: 15px;
+        }
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            line-height: 1.2;
+        }
+        .stat-trend {
+            margin-top: 8px;
+            font-size: 12px;
+        }
+        .trend-up {
+            color: #009688;
+        }
+        .trend-down {
+            color: #f56c6c;
+        }
+        .chart-container {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .chart-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f2f2f2;
+        }
+        .job-list {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            padding: 15px;
+        }
+        .job-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f2f2f2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .job-item:last-child {
+            border-bottom: none;
+        }
+        .job-title {
+            font-weight: 500;
+            color: #1E9FFF;
+            margin-bottom: 4px;
+        }
+        .job-company {
+            font-size: 12px;
+            color: #666;
+        }
+        .job-salary {
+            color: #FF5722;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="layui-container">
+        <div class="layui-row layui-col-space15">
+            <!-- 招聘关键指标卡片 -->
+            <div class="layui-col-xs6 layui-col-sm3">
+                <div class="layui-card stat-card">
+                    <div class="layui-card-header">
+                        <i class="fa fa-briefcase" style="color: #1E9FFF; margin-right: 5px;"></i>
+                        职位总数
+                    </div>
+                    <div class="layui-card-body">
+                        <div class="stat-number">3,856</div>
+                        <div class="stat-trend">
+                            <span class="trend-up"><i class="fa fa-arrow-up"></i> 较昨日 +128</span>
+                            <br>
+                            <span class="trend-up"><i class="fa fa-arrow-up"></i> 较上周 +8.3%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="layui-col-xs6 layui-col-sm3">
+                <div class="layui-card stat-card">
+                    <div class="layui-card-header">
+                        <i class="fa fa-users" style="color: #5FB878; margin-right: 5px;"></i>
+                        求职者总数
+                    </div>
+                    <div class="layui-card-body">
+                        <div class="stat-number">24,671</div>
+                        <div class="stat-trend">
+                            <span class="trend-up"><i class="fa fa-arrow-up"></i> 较昨日 +356</span>
+                            <br>
+                            <span class="trend-up"><i class="fa fa-arrow-up"></i> 较上周 +12.5%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="layui-col-xs6 layui-col-sm3">
+                <div class="layui-card stat-card">
+                    <div class="layui-card-header">
+                        <i class="fa fa-handshake-o" style="color: #FF9800; margin-right: 5px;"></i>
+                        简历投递量
+                    </div>
+                    <div class="layui-card-body">
+                        <div class="stat-number">15,289</div>
+                        <div class="stat-trend">
+                            <span class="trend-up"><i class="fa fa-arrow-up"></i> 较昨日 +215</span>
+                            <br>
+                            <span class="trend-down"><i class="fa fa-arrow-down"></i> 较上周 -2.1%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="layui-col-xs6 layui-col-sm3">
+                <div class="layui-card stat-card">
+                    <div class="layui-card-header">
+                        <i class="fa fa-check-circle" style="color: #FF5722; margin-right: 5px;"></i>
+                        面试转化率
+                    </div>
+                    <div class="layui-card-body">
+                        <div class="stat-number">12.8%</div>
+                        <div class="stat-trend">
+                            <span class="trend-up"><i class="fa fa-arrow-up"></i> 较昨日 +0.3%</span>
+                            <br>
+                            <span class="trend-up"><i class="fa fa-arrow-up"></i> 较上周 +1.2%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主要图表区域 -->
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-xs12 layui-col-md8">
+                <div class="chart-container">
+                    <div class="chart-title">招聘趋势分析</div>
+                    <div id="recruitment-trend-chart" style="height: 300px;"></div>
+                </div>
+            </div>
+            
+            <div class="layui-col-xs12 layui-col-md4">
+                <div class="chart-container">
+                    <div class="chart-title">职位类别分布</div>
+                    <div id="job-category-chart" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 次要图表和数据区域 -->
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-xs12 layui-col-md6">
+                <div class="chart-container">
+                    <div class="chart-title">薪资分布区间</div>
+                    <div id="salary-range-chart" style="height: 250px;"></div>
+                </div>
+            </div>
+            
+            <div class="layui-col-xs12 layui-col-md6">
+                <div class="job-list">
+                    <div class="chart-title">热门职位推荐</div>
+                    <div class="job-item">
+                        <div>
+                            <div class="job-title">前端开发工程师</div>
+                            <div class="job-company">科技有限公司 · 3-5年经验 · 本科</div>
+                        </div>
+                        <div class="job-salary">15K-25K</div>
+                    </div>
+                    <div class="job-item">
+                        <div>
+                            <div class="job-title">市场营销专员</div>
+                            <div class="job-company">广告有限公司 · 1-3年经验 · 大专</div>
+                        </div>
+                        <div class="job-salary">8K-12K</div>
+                    </div>
+                    <div class="job-item">
+                        <div>
+                            <div class="job-title">人力资源经理</div>
+                            <div class="job-company">集团公司 · 5年以上 · 本科</div>
+                        </div>
+                        <div class="job-salary">20K-30K</div>
+                    </div>
+                    <div class="job-item">
+                        <div>
+                            <div class="job-title">销售代表</div>
+                            <div class="job-company">贸易有限公司 · 不限经验 · 高中</div>
+                        </div>
+                        <div class="job-salary">6K-15K</div>
+                    </div>
+                    <div class="job-item">
+                        <div>
+                            <div class="job-title">UI设计师</div>
+                            <div class="job-company">设计工作室 · 1-3年经验 · 本科</div>
+                        </div>
+                        <div class="job-salary">10K-18K</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.staticfile.org/layui/2.6.8/layui.js" charset="utf-8"></script>
+    <script src="https://cdn.staticfile.org/echarts/5.3.3/echarts.min.js" charset="utf-8"></script>
+    <script>
+        layui.use(['element'], function () {
+            var element = layui.element;
+            
+            // 初始化图表
+            // 招聘趋势图
+            var recruitmentTrendChart = echarts.init(document.getElementById('recruitment-trend-chart'));
+            var trendOption = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['职位数', '求职者数', '简历投递量'],
+                    top: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name: '职位数',
+                        type: 'line',
+                        data: [2100, 2300, 2800, 3200, 3500, 3650, 3700, 3800, 3856],
+                        smooth: true
+                    },
+                    {
+                        name: '求职者数',
+                        type: 'line',
+                        data: [12000, 14500, 16800, 18200, 20500, 21300, 22800, 23700, 24671],
+                        smooth: true
+                    },
+                    {
+                        name: '简历投递量',
+                        type: 'line',
+                        data: [8500, 9200, 10500, 12800, 13500, 14200, 14800, 15100, 15289],
+                        smooth: true
+                    }
+                ]
+            };
+            recruitmentTrendChart.setOption(trendOption);
+            
+            // 职位类别分布图
+            var jobCategoryChart = echarts.init(document.getElementById('job-category-chart'));
+            var categoryOption = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 10,
+                    top: 20
+                },
+                series: [
+                    {
+                        name: '职位类别',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 4,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: 16,
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            { value: 30, name: '技术开发' },
+                            { value: 20, name: '市场营销' },
+                            { value: 15, name: '销售' },
+                            { value: 10, name: '人力资源' },
+                            { value: 10, name: '设计创意' },
+                            { value: 15, name: '其他' }
+                        ]
+                    }
+                ]
+            };
+            jobCategoryChart.setOption(categoryOption);
+            
+            // 薪资分布区间图
+            var salaryRangeChart = echarts.init(document.getElementById('salary-range-chart'));
+            var salaryOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['5K以下', '5K-10K', '10K-15K', '15K-20K', '20K-30K', '30K以上']
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '职位数量'
+                },
+                series: [
+                    {
+                        name: '薪资区间',
+                        type: 'bar',
+                        data: [420, 980, 850, 720, 530, 356],
+                        itemStyle: {
+                            color: function(params) {
+                                var colorList = ['#8BC34A', '#00BCD4', '#1E9FFF', '#9C27B0', '#FF9800', '#FF5722'];
+                                return colorList[params.dataIndex];
+                            }
+                        }
+                    }
+                ]
+            };
+            salaryRangeChart.setOption(salaryOption);
+            
+            // 响应窗口大小变化
+            window.addEventListener('resize', function() {
+                recruitmentTrendChart.resize();
+                jobCategoryChart.resize();
+                salaryRangeChart.resize();
+            });
+        });
+    </script>
+</body>
+</html>

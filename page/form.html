@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>信息发布中心</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.6.8/css/layui.css" media="all">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css" media="all">
+    <style>
+        .layuimini-container {
+            padding: 15px;
+        }
+        .layuimini-main {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 4px;
+            min-height: calc(100vh - 30px);
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .info-type-tabs {
+            margin-bottom: 25px;
+        }
+        .form-section {
+            margin-bottom: 25px;
+        }
+        .form-section-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            padding-left: 5px;
+            border-left: 3px solid #1E9FFF;
+        }
+        .form-required {
+            color: #FF5722;
+            margin-right: 5px;
+        }
+        .form-hint {
+            color: #999;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+        .upload-area {
+            border: 1px dashed #ccc;
+            border-radius: 4px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #1E9FFF;
+        }
+        .upload-icon {
+            font-size: 36px;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+        .upload-text {
+            color: #666;
+        }
+        .uploaded-list {
+            margin-top: 15px;
+        }
+        .uploaded-item {
+            display: inline-block;
+            position: relative;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .uploaded-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+        .uploaded-remove {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background-color: #FF5722;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .form-actions {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+        .form-actions button {
+            margin: 0 10px;
+        }
+        .info-preview {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .preview-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        .type-description {
+            background-color: #f5f7fa;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="page-title">
+            <i class="fa fa-pencil-square-o" style="margin-right: 8px;"></i>信息发布中心
+        </div>
+        
+        <!-- 信息类型选项卡 -->
+        <div class="info-type-tabs">
+            <div class="layui-tab" lay-filter="info-type-tab">
+                <ul class="layui-tab-title">
+                    <li class="layui-this" lay-id="notice">公告通知</li>
+                    <li lay-id="news">新闻资讯</li>
+                    <li lay-id="activity">活动报名</li>
+                    <li lay-id="recruitment">招聘信息</li>
+                    <li lay-id="product">产品发布</li>
+                </ul>
+                
+                <div class="layui-tab-content">
+                    <!-- 公告通知表单 -->
+                    <div class="layui-tab-item layui-show" id="notice-form">
+                        <div class="type-description">
+                            <i class="fa fa-info-circle" style="margin-right: 5px;"></i>
+                            公告通知用于发布重要信息、通知公告等内容，将展示在首页公告栏，所有用户可见。
+                        </div>
+                        
+                        <form class="layui-form" action="" lay-filter="notice-form-filter">
+                            <div class="form-section">
+                                <div class="form-section-title">基本信息</div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>标题
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="title" lay-verify="required" placeholder="请输入公告标题" autocomplete="off" class="layui-input">
+                                        <span class="form-hint">请填写简洁明了的标题，不超过30个字</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>公告类型
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <select name="notice_type" lay-verify="required">
+                                            <option value="">请选择公告类型</option>
+                                            <option value="important">重要公告</option>
+                                            <option value="ordinary">普通通知</option>
+                                            <option value="system">系统通知</option>
+                                            <option value="activity">活动通知</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>发布范围
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="radio" name="scope" value="all" title="全部用户" checked>
+                                        <input type="radio" name="scope" value="member" title="仅会员">
+                                        <input type="radio" name="scope" value="admin" title="仅管理员">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>生效时间
+                                    </label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="start_time" id="notice-start-time" lay-verify="required" placeholder="开始时间" autocomplete="off" class="layui-input">
+                                    </div>
+                                    <div class="layui-form-mid">至</div>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="end_time" id="notice-end-time" lay-verify="required" placeholder="结束时间" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>公告内容
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <textarea name="content" lay-verify="required" placeholder="请输入公告内容" class="layui-textarea" style="height: 200px;"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">附件上传</label>
+                                    <div class="layui-input-block">
+                                        <div class="upload-area" id="notice-upload">
+                                            <div class="upload-icon">
+                                                <i class="fa fa-cloud-upload"></i>
+                                            </div>
+                                            <div class="upload-text">
+                                                点击或拖拽文件到此处上传<br>
+                                                支持PDF、DOC、ZIP格式，单个文件不超过10MB
+                                            </div>
+                                        </div>
+                                        <input type="file" id="notice-file-input" style="display: none;" accept=".pdf,.doc,.docx,.zip,.rar">
+                                        <div class="uploaded-list" id="notice-uploaded-list"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">是否置顶</label>
+                                    <div class="layui-input-block">
+                                        <input type="checkbox" name="is_top" lay-skin="switch" lay-text="是|否">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="layui-btn" lay-submit="" lay-filter="notice-submit">发布公告</button>
+                                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                <button type="button" class="layui-btn layui-btn-normal" id="notice-preview">预览</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- 新闻资讯表单 -->
+                    <div class="layui-tab-item" id="news-form">
+                        <div class="type-description">
+                            <i class="fa fa-info-circle" style="margin-right: 5px;"></i>
+                            新闻资讯用于发布行业动态、时事新闻等内容，将展示在新闻栏目，支持图文混排。
+                        </div>
+                        
+                        <form class="layui-form" action="" lay-filter="news-form-filter">
+                            <div class="form-section">
+                                <div class="form-section-title">新闻信息</div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>新闻标题
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="title" lay-verify="required" placeholder="请输入新闻标题" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>新闻分类
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <select name="category" lay-verify="required">
+                                            <option value="">请选择新闻分类</option>
+                                            <option value="industry">行业动态</option>
+                                            <option value="company">公司新闻</option>
+                                            <option value="policy">政策法规</option>
+                                            <option value="technology">技术资讯</option>
+                                            <option value="market">市场分析</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>新闻来源
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="source" lay-verify="required" placeholder="请输入新闻来源" autocomplete="off" class="layui-input">
+                                        <span class="form-hint">如：公司原创、人民日报、网络转载等</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>封面图片
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <div class="upload-area" id="news-cover-upload">
+                                            <div class="upload-icon">
+                                                <i class="fa fa-picture-o"></i>
+                                            </div>
+                                            <div class="upload-text">
+                                                点击或拖拽图片到此处上传<br>
+                                                支持JPG、PNG格式，建议尺寸1200×600px
+                                            </div>
+                                        </div>
+                                        <input type="file" id="news-cover-input" style="display: none;" accept="image/jpeg,image/png">
+                                        <div class="uploaded-list" id="news-cover-list"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>新闻摘要
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <textarea name="summary" lay-verify="required" placeholder="请输入新闻摘要" class="layui-textarea" style="height: 100px;"></textarea>
+                                        <span class="form-hint">简要描述新闻内容，不超过200字，将显示在新闻列表页</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>新闻内容
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <textarea name="content" lay-verify="required" placeholder="请输入新闻内容" class="layui-textarea" style="height: 300px;"></textarea>
+                                        <span class="form-hint">支持HTML格式，可插入图片和链接</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">标签</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="tags" placeholder="请输入标签，多个标签用逗号分隔" autocomplete="off" class="layui-input">
+                                        <span class="form-hint">如：科技,创新,发展</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">是否推荐</label>
+                                    <div class="layui-input-block">
+                                        <input type="checkbox" name="is_recommend" lay-skin="switch" lay-text="是|否">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="layui-btn" lay-submit="" lay-filter="news-submit">发布新闻</button>
+                                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                <button type="button" class="layui-btn layui-btn-normal" id="news-preview">预览</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- 活动报名表单 -->
+                    <div class="layui-tab-item" id="activity-form">
+                        <div class="type-description">
+                            <i class="fa fa-info-circle" style="margin-right: 5px;"></i>
+                            活动报名用于发布各类线上线下活动，支持设置报名时间、活动地点和参与人数限制。
+                        </div>
+                        
+                        <form class="layui-form" action="" lay-filter="activity-form-filter">
+                            <!-- 活动表单内容 -->
+                            <div class="form-section">
+                                <div class="form-section-title">活动信息</div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>活动标题
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="title" lay-verify="required" placeholder="请输入活动标题" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>活动类型
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <select name="type" lay-verify="required">
+                                            <option value="">请选择活动类型</option>
+                                            <option value="online">线上活动</option>
+                                            <option value="offline">线下活动</option>
+                                            <option value="hybrid">线上线下结合</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>活动时间
+                                    </label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="start_time" id="activity-start-time" lay-verify="required" placeholder="开始时间" autocomplete="off" class="layui-input">
+                                    </div>
+                                    <div class="layui-form-mid">至</div>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="end_time" id="activity-end-time" lay-verify="required" placeholder="结束时间" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>活动地点
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="location" lay-verify="required" placeholder="请输入活动地点" autocomplete="off" class="layui-input">
+                                        <span class="form-hint">线上活动可填写直播间地址或会议链接</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>报名截止时间
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="signup_deadline" id="signup-deadline" lay-verify="required" placeholder="请选择报名截止时间" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>活动人数限制
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="number" name="person_limit" lay-verify="required|number" min="1" placeholder="请输入活动人数限制" autocomplete="off" class="layui-input">
+                                        <span class="form-hint">0表示不限制人数</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>活动详情
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <textarea name="content" lay-verify="required" placeholder="请输入活动详情" class="layui-textarea" style="height: 200px;"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">活动海报</label>
+                                    <div class="layui-input-block">
+                                        <div class="upload-area" id="activity-poster-upload">
+                                            <div class="upload-icon">
+                                                <i class="fa fa-picture-o"></i>
+                                            </div>
+                                            <div class="upload-text">
+                                                点击或拖拽图片到此处上传<br>
+                                                支持JPG、PNG格式，建议尺寸800×600px
+                                            </div>
+                                        </div>
+                                        <input type="file" id="activity-poster-input" style="display: none;" accept="image/jpeg,image/png">
+                                        <div class="uploaded-list" id="activity-poster-list"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">活动费用</label>
+                                    <div class="layui-input-block">
+                                        <input type="number" name="fee" lay-verify="number" min="0" step="0.01" placeholder="请输入活动费用" autocomplete="off" class="layui-input">
+                                        <span class="form-hint">免费活动请填写0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="layui-btn" lay-submit="" lay-filter="activity-submit">发布活动</button>
+                                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                <button type="button" class="layui-btn layui-btn-normal" id="activity-preview">预览</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- 招聘信息表单 -->
+                    <div class="layui-tab-item" id="recruitment-form">
+                        <!-- 招聘表单内容 -->
+                        <div class="type-description">
+                            <i class="fa fa-info-circle" style="margin-right: 5px;"></i>
+                            招聘信息用于发布职位招聘，支持设置岗位职责、任职要求和薪资待遇等信息。
+                        </div>
+                        
+                        <form class="layui-form" action="" lay-filter="recruitment-form-filter">
+                            <div class="form-section">
+                                <div class="form-section-title">招聘信息</div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>职位名称
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="job_title" lay-verify="required" placeholder="请输入职位名称" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>所属部门
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="department" lay-verify="required" placeholder="请输入所属部门" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>工作地点
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="work_location" lay-verify="required" placeholder="请输入工作地点" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>招聘人数
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="number" name="recruit_num" lay-verify="required|number" min="1" placeholder="请输入招聘人数" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>薪资范围
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <select name="salary_range" lay-verify="required">
+                                            <option value="">请选择薪资范围</option>
+                                            <option value="3k以下">3k以下</option>
+                                            <option value="3k-5k">3k-5k</option>
+                                            <option value="5k-8k">5k-8k</option>
+                                            <option value="8k-12k">8k-12k</option>
+                                            <option value="12k-20k">12k-20k</option>
+                                            <option value="20k-30k">20k-30k</option>
+                                            <option value="30k以上">30k以上</option>
+                                            <option value="面议">面议</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>学历要求
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <select name="education" lay-verify="required">
+                                            <option value="">请选择学历要求</option>
+                                            <option value="highschool">高中及以下</option>
+                                            <option value="associate">专科</option>
+                                            <option value="bachelor">本科</option>
+                                            <option value="master">硕士</option>
+                                            <option value="phd">博士及以上</option>
+                                            <option value="none">不限</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>工作经验
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <select name="experience" lay-verify="required">
+                                            <option value="">请选择工作经验</option>
+                                            <option value="fresh">应届生</option>
+                                            <option value="1year">1年以内</option>
+                                            <option value="1-3year">1-3年</option>
+                                            <option value="3-5year">3-5年</option>
+                                            <option value="5-10year">5-10年</option>
+                                            <option value="10year">10年以上</option>
+                                            <option value="none">不限</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>岗位职责
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <textarea name="duties" lay-verify="required" placeholder="请输入岗位职责" class="layui-textarea" style="height: 150px;"></textarea>
+                                        <span class="form-hint">请分点描述，每行一条职责</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>任职要求
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <textarea name="requirements" lay-verify="required" placeholder="请输入任职要求" class="layui-textarea" style="height: 150px;"></textarea>
+                                        <span class="form-hint">请分点描述，每行一条要求</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label">福利待遇</label>
+                                    <div class="layui-input-block">
+                                        <textarea name="benefits" placeholder="请输入福利待遇" class="layui-textarea" style="height: 100px;"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>联系方式
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="contact" lay-verify="required" placeholder="请输入联系人及电话" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">截止日期</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="deadline" id="recruitment-deadline" placeholder="请选择招聘截止日期" autocomplete="off" class="layui-input">
+                                        <span class="form-hint">不填写则表示长期有效</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="layui-btn" lay-submit="" lay-filter="recruitment-submit">发布招聘</button>
+                                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                <button type="button" class="layui-btn layui-btn-normal" id="recruitment-preview">预览</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- 产品发布表单 -->
+                    <div class="layui-tab-item" id="product-form">
+                        <!-- 产品表单内容 -->
+                        <div class="type-description">
+                            <i class="fa fa-info-circle" style="margin-right: 5px;"></i>
+                            产品发布用于展示和推广产品信息，支持上传多张产品图片和详细参数说明。
+                        </div>
+                        
+                        <form class="layui-form" action="" lay-filter="product-form-filter">
+                            <div class="form-section">
+                                <div class="form-section-title">产品信息</div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>产品名称
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="product_name" lay-verify="required" placeholder="请输入产品名称" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>产品分类
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <select name="category" lay-verify="required">
+                                            <option value="">请选择产品分类</option>
+                                            <option value="digital">数码电子</option>
+                                            <option value="home">家居用品</option>
+                                            <option value="clothing">服装服饰</option>
+                                            <option value="food">食品饮料</option>
+                                            <option value="book">图书音像</option>
+                                            <option value="service">服务产品</option>
+                                            <option value="other">其他产品</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>产品价格
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="number" name="price" lay-verify="required|number" min="0" step="0.01" placeholder="请输入产品价格" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">产品型号</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="model" placeholder="请输入产品型号" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>产品图片
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <div class="upload-area" id="product-img-upload">
+                                            <div class="upload-icon">
+                                                <i class="fa fa-picture-o"></i>
+                                            </div>
+                                            <div class="upload-text">
+                                                点击或拖拽图片到此处上传<br>
+                                                支持JPG、PNG格式，最多上传5张
+                                            </div>
+                                        </div>
+                                        <input type="file" id="product-img-input" style="display: none;" accept="image/jpeg,image/png" multiple>
+                                        <div class="uploaded-list" id="product-img-list"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>产品简介
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <textarea name="brief" lay-verify="required" placeholder="请输入产品简介" class="layui-textarea" style="height: 100px;"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label">
+                                        <span class="form-required">*</span>产品详情
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <textarea name="details" lay-verify="required" placeholder="请输入产品详情" class="layui-textarea" style="height: 200px;"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">产品标签</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="tags" placeholder="请输入产品标签，多个标签用逗号分隔" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">库存数量</label>
+                                    <div class="layui-input-block">
+                                        <input type="number" name="stock" lay-verify="number" min="0" placeholder="请输入库存数量" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">是否上架</label>
+                                    <div class="layui-input-block">
+                                        <input type="checkbox" name="is_onsale" lay-skin="switch" lay-text="是|否" checked>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="layui-btn" lay-submit="" lay-filter="product-submit">发布产品</button>
+                                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                <button type="button" class="layui-btn layui-btn-normal" id="product-preview">预览</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.staticfile.org/layui/2.6.8/layui.js" charset="utf-8"></script>
+<script src="https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'laydate', 'element', 'layer'], function () {
+        var form = layui.form
+            , laydate = layui.laydate
+            , element = layui.element
+            , layer = layui.layer
+            , $ = layui.jquery;
+
+        // 初始化日期选择器
+        laydate.render({
+            elem: '#notice-start-time'
+            , type: 'datetime'
+        });
+        laydate.render({
+            elem: '#notice-end-time'
+            , type: 'datetime'
+        });
+        laydate.render({
+            elem: '#activity-start-time'
+            , type: 'datetime'
+        });
+        laydate.render({
+            elem: '#activity-end-time'
+            , type: 'datetime'
+        });
+        laydate.render({
+            elem: '#signup-deadline'
+            , type: 'datetime'
+        });
+        laydate.render({
+            elem: '#recruitment-deadline'
+            , type: 'date'
+        });
+
+        // 公告附件上传
+        initUpload('notice');
+        // 新闻封面上传
+        initUpload('news-cover', 1);
+        // 活动海报上传
+        initUpload('activity-poster', 1);
+        // 产品图片上传
+        initUpload('product-img', 5);
+
+        // 上传初始化函数
+        function initUpload(id, maxCount = 5) {
+            $('#' + id + '-upload').click(function() {
+                $('#' + id + '-input').click();
+            });
+            
+            $('#' + id + '-input').change(function(e) {
+                var files = e.target.files;
+                if (!files || files.length === 0) return;
+                
+                // 检查文件数量
+                var currentCount = $('#' + id + '-uploaded-list .uploaded-item').length;
+                if (currentCount + files.length > maxCount) {
+                    layer.msg('最多只能上传' + maxCount + '个文件');
+                    return;
+                }
+                
+                // 模拟上传成功
+                setTimeout(function() {
+                    for (var i = 0; i < files.length; i++) {
+                        var file = files[i];
+                        var fileName = file.name;
+                        var fileSize = (file.size / 1024).toFixed(1) + 'KB';
+                        
+                        // 图片文件显示缩略图，其他文件显示图标
+                        var fileHtml = '';
+                        if (file.type.indexOf('image/') === 0) {
+                            var reader = new FileReader();
+                            reader.onload = function(e) {
+                                var html = '<div class="uploaded-item">' +
+                                          '<img src="' + e.target.result + '" class="uploaded-img" alt="上传图片">' +
+                                          '<div class="uploaded-remove" data-id="' + id + '">×</div>' +
+                                          '</div>';
+                                $('#' + id + '-uploaded-list').append(html);
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            fileHtml = '<div class="uploaded-item">' +
+                                      '<div style="width:100px;height:100px;display:flex;align-items:center;justify-content:center;border:1px solid #eee;border-radius:4px;background:#f9f9f9;">' +
+                                      '<i class="fa fa-file-text-o" style="font-size:30px;color:#999;"></i>' +
+                                      '</div>' +
+                                      '<div class="uploaded-remove" data-id="' + id + '">×</div>' +
+                                      '</div>';
+                            $('#' + id + '-uploaded-list').append(fileHtml);
+                        }
+                    }
+                    
+                    // 清空input值，否则同一文件无法重复上传
+                    $('#' + id + '-input').val('');
+                }, 800);
+            });
+        }
+        
+        // 删除上传文件
+        $(document).on('click', '.uploaded-remove', function() {
+            var id = $(this).attr('data-id');
+            $(this).parent().remove();
+        });
+
+        // 监听表单提交
+        form.on('submit(notice-submit)', function(data) {
+            submitForm('公告', data.field);
+            return false;
+        });
+        
+        form.on('submit(news-submit)', function(data) {
+            submitForm('新闻', data.field);
+            return false;
+        });
+        
+        form.on('submit(activity-submit)', function(data) {
+            submitForm('活动', data.field);
+            return false;
+        });
+        
+        form.on('submit(recruitment-submit)', function(data) {
+            submitForm('招聘', data.field);
+            return false;
+        });
+        
+        form.on('submit(product-submit)', function(data) {
+            submitForm('产品', data.field);
+            return false;
+        });
+        
+        // 提交表单处理函数
+        function submitForm(type, data) {
+            layer.load(2);
+            
+            // 模拟表单提交
+            setTimeout(function() {
+                layer.closeAll('loading');
+                layer.alert(type + '信息提交成功！', function() {
+                    // 关闭弹窗后重置当前表单
+                    var activeTab = $('.layui-tab-title .layui-this').attr('lay-id');
+                    $('form[lay-filter="' + activeTab + '-form-filter"]')[0].reset();
+                    // 清空上传文件列表
+                    $('#' + activeTab + '-uploaded-list, #news-cover-list, #activity-poster-list, #product-img-list').empty();
+                    form.render();
+                });
+            }, 1500);
+        }
+        
+        // 预览按钮点击事件
+        $('#notice-preview, #news-preview, #activity-preview, #recruitment-preview, #product-preview').click(function() {
+            var type = $(this).attr('id').replace('-preview', '');
+            var typeName = '';
+            
+            switch(type) {
+                case 'notice': typeName = '公告'; break;
+                case 'news': typeName = '新闻'; break;
+                case 'activity': typeName = '活动'; break;
+                case 'recruitment': typeName = '招聘'; break;
+                case 'product': typeName = '产品'; break;
+            }
+            
+            layer.open({
+                title: typeName + '预览',
+                type: 1,
+                area: ['800px', '600px'],
+                shade: 0.3,
+                content: '<div style="padding:20px;overflow-y:auto;height:560px;">' +
+                         '<h3 style="text-align:center;margin-bottom:20px;">' + $('form[lay-filter="' + type + '-form-filter"] [name="title"]').val() || typeName + '标题' + '</h3>' +
+                         '<div style="line-height:1.8;color:#333;">' +
+                         '此处为' + typeName + '预览内容，实际应用中会根据表单填写的内容生成对应的预览效果。<br><br>' +
+                         '预览功能可以帮助您在正式发布前检查内容格式和排版是否符合预期。' +
+                         '</div>' +
+                         '</div>'
+            });
+        });
+        
+        // 监听选项卡切换
+        element.on('tab(info-type-tab)', function(data) {
+            // 选项卡切换时可以在这里做一些初始化操作
+            console.log('切换到：' + this.getAttribute('lay-id'));
+        });
+    });
+</script>
+</body>
+</html>
+    
